@@ -18,7 +18,7 @@ namespace WebApi.Helper
         {
             ContinuationToken continuationToken = null;
             var vehicles = new List<Vehicle>();
-            var actorServiceProxy = ActorServiceProxy.Create(new Uri("fabric:/CarActorSF/CarActorService"), null);
+            var actorServiceProxy = ActorServiceProxy.Create(new Uri("fabric:/CarActorSF/CarActorService"), 0);
             var queriedActorCount = 0;
             do
             {

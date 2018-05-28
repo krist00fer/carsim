@@ -16,7 +16,7 @@ namespace WebApi.Controllers
     {
         // POST api/vehicles
         [HttpPost]
-        public async void Post([FromBody]SimulatedCar value)
+        public async void Post(SimulatedCar value)
         {
             var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{value.VehicleId}"));
             if (value.Running)
