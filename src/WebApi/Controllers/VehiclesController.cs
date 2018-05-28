@@ -22,16 +22,14 @@ namespace WebApi.Controllers
         [HttpGet("{vehicleId}")]
         public Task<Vehicle> Get(string vehicleId)
         {
-            // TODO: Return specific vehicle
             return SimulatedCarHelper.GetVehicle(vehicleId);
         }
 
         // GET api/vehicle/UAK298/status
         [HttpGet("{vehicleId}/status")]
-        public VehicleStatus GetStatus(string vehicleId)
+        public Task<VehicleStatus> GetStatus(string vehicleId)
         {
-            // TODO: return current status for vehicle
-            return new VehicleStatus { CurrentGeoPosition = 0, FromGeoPosition = 0, ToGeoPosition = 0 };
+            return SimulatedCarHelper.GetVehicleStatus(vehicleId);
         }
         // POST api/vehicles
         [HttpPost]

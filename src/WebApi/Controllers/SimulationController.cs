@@ -18,12 +18,11 @@ namespace WebApi.Controllers
         [HttpPost]
         public async void Post([FromBody]SimulatedCar value)
         {
-            // TODO: Add new actor
             var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{value.VehicleId}"));
             if (value.Running)
-                await proxy.Start();
+                await proxy.StartAsync(value.FromPosition, value.ToPosition, CancellationToken.None);
             else
-                await proxy.Stop();
+                await proxy.StopAsync(CancellationToken.None);
         }
 
         // PUT api/vehicle/5
@@ -32,9 +31,9 @@ namespace WebApi.Controllers
         {
             var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{value.VehicleId}"));
             if (value.Running)
-                await proxy.Start();
+                await proxy.StartAsync(value.FromPosition, value.ToPosition, CancellationToken.None);
             else
-                await proxy.Stop();
+                await proxy.StopAsync(CancellationToken.None);
         }
 
         // DELETE api/values/5
@@ -43,8 +42,8 @@ namespace WebApi.Controllers
         {
             var actorId = new ActorId($"SimulatedCar:{vehicleId}");
             var proxy = ActorProxy.Create<ICarActor>(actorId);
-            await proxy.Stop();
-            var serviceProxy = ActorServiceProxy.Create(new Uri("TODO"), actorId);
+            await proxy.StopAsync(CancellationToken.None);
+            var serviceProxy = ActorServiceProxy.Create(new Uri("fabric:/CarActorSF/CarActorService"), actorId);
             await serviceProxy.DeleteActorAsync(actorId, CancellationToken.None);
         }
     }

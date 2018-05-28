@@ -8,16 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace WebApi.Helper
 {
     public static class SimulatedCarHelper
     {
-        public static async Task<IEnumerable<Vehicle>> GetVehicles()
+        public static Task<IEnumerable<Vehicle>> GetVehicles()
         {
             ContinuationToken continuationToken = null;
             var vehicles = new List<Vehicle>();
-            var actorServiceProxy = ActorServiceProxy.Create(new Uri("fabric:/MyActorApp/MyActorService"), null);
+            var actorServiceProxy = ActorServiceProxy.Create(new Uri("fabric:/CarActorSF/CarActorService"), null);
             var queriedActorCount = 0;
             do
             {
@@ -31,17 +32,17 @@ namespace WebApi.Helper
                 queriedActorCount += queryResult.Items.Count();
                 continuationToken = queryResult.ContinuationToken;
             } while (continuationToken != null);
-            return vehicles;
+            return Task.FromResult(vehicles.AsEnumerable());
         }
 
-        public static async Task<Vehicle> GetVehicle(string vehicleId)
+        public static Task<Vehicle> GetVehicle(string vehicleId)
         {
             //var proxy = GetActorProxy(vehicleId);
             //return proxy.Get();
-            return new Vehicle { VehicleId = vehicleId };
+            return Task.FromResult(new Vehicle { VehicleId = vehicleId });
         }
 
-        public static async Task<VehicleStatus> GetVehicleStatus(string vehicleId)
+        public static Task<VehicleStatus> GetVehicleStatus(string vehicleId)
         {
             var proxy = GetActorProxy(vehicleId);
             return proxy.GetStatusAsync(CancellationToken.None);
