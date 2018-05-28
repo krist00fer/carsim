@@ -7,11 +7,13 @@ Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "CarSimulatorSF", "CarSimula
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csproj", "{C31287AB-9981-40D8-A198-CD8C3286C240}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarActor", "CarActor\CarActor.csproj", "{FFA1ED14-0607-453F-9597-F90D93B7275F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarActor", "CarActor\CarActor.csproj", "{FFA1ED14-0607-453F-9597-F90D93B7275F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarActor.Interfaces", "CarActor.Interfaces\CarActor.Interfaces.csproj", "{C8BFA333-6791-4D17-98CD-5EF1B885A508}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarActor.Interfaces", "CarActor.Interfaces\CarActor.Interfaces.csproj", "{C8BFA333-6791-4D17-98CD-5EF1B885A508}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{0A641563-712C-46E9-9088-A82071DB2A8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationConsole", "SimulationConsole\SimulationConsole.csproj", "{87D41E73-28AD-422F-B9FA-05497554546A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,14 @@ Global
 		{0A641563-712C-46E9-9088-A82071DB2A8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0A641563-712C-46E9-9088-A82071DB2A8C}.Release|x64.ActiveCfg = Release|Any CPU
 		{0A641563-712C-46E9-9088-A82071DB2A8C}.Release|x64.Build.0 = Release|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Debug|x64.Build.0 = Debug|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Release|x64.ActiveCfg = Release|Any CPU
+		{87D41E73-28AD-422F-B9FA-05497554546A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
