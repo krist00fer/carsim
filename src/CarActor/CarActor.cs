@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using CarActor.Interfaces;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
-using Microsoft.ServiceFabric.Actors.Client;
-using CarActor.Interfaces;
+using Models;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CarActor
 {
@@ -19,7 +17,7 @@ namespace CarActor
     ///  - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
-    internal class CarActor : Actor, ICarActor
+    internal class CarActor : Actor, ICarActor, IRemindable
     {
         /// <summary>
         /// Initializes a new instance of CarActor
@@ -39,38 +37,48 @@ namespace CarActor
         {
             ActorEventSource.Current.ActorMessage(this, "Actor activated.");
 
-            // The StateManager is this actor's private state store.
-            // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.
-            // Any serializable object can be saved in the StateManager.
-            // For more information, see https://aka.ms/servicefabricactorsstateserialization
-
-            return this.StateManager.TryAddStateAsync("count", 0);
+            return Task.CompletedTask;
         }
 
-        public Task<string> GetStatusAsync(CancellationToken cancellationToken)
+        public async Task<VehicleStatus> GetStatusAsync(CancellationToken cancellationToken)
         {
-            return Task.FromResult("test");
+            return new VehicleStatus
+            {
+                FromGeoPosition = await StateManager.GetStateAsync<int>("from-geo-position"),
+                CurrentGeoPosition = await StateManager.GetStateAsync<int>("current-geo-position"),
+                ToGeoPosition = await StateManager.GetStateAsync<int>("to-geo-position")
+            };
         }
 
-        /// <summary>
-        /// TODO: Replace with your own actor method.
-        /// </summary>
-        /// <returns></returns>
-        Task<int> ICarActor.GetCountAsync(CancellationToken cancellationToken)
+        public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {
-            return this.StateManager.GetStateAsync<int>("count", cancellationToken);
+            var currentGeoPosition = await StateManager.GetOrAddStateAsync("current-geo-position", 0);
+            var toGeoPosition = await StateManager.GetOrAddStateAsync("to-geo-position", 0);
+
+            await StateManager.AddOrUpdateStateAsync("current-geo-position", ++currentGeoPosition, (k, v) => v);
+
+            if (currentGeoPosition >= toGeoPosition)
+            {
+                await StopAsync(CancellationToken.None);
+            }
         }
 
-        /// <summary>
-        /// TODO: Replace with your own actor method.
-        /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        Task ICarActor.SetCountAsync(int count, CancellationToken cancellationToken)
+        public async Task StartAsync(int from, int to, CancellationToken cancellationToken)
         {
-            // Requests are not guaranteed to be processed in order nor at most once.
-            // The update function here verifies that the incoming count is greater than the current count to preserve order.
-            return this.StateManager.AddOrUpdateStateAsync("count", count, (key, value) => count > value ? count : value, cancellationToken);
+            await StateManager.AddOrUpdateStateAsync("from-geo-position", from, (k, v) => v);
+            await StateManager.AddOrUpdateStateAsync("current-geo-position", from, (k, v) => v);
+            await StateManager.AddOrUpdateStateAsync("to-geo-position", to, (k, v) => v);
+
+            await RegisterReminderAsync(
+                "update-reminder", null,
+                TimeSpan.FromSeconds(5),    //The amount of time to delay before firing the reminder
+                TimeSpan.FromSeconds(5));    //The time interval between firing of reminders
+        }
+
+        public async Task StopAsync(CancellationToken cancellation)
+        {
+            var reminder = GetReminder("update-reminder");
+            await UnregisterReminderAsync(reminder);
         }
     }
 }
