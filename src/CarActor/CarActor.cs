@@ -47,6 +47,11 @@ namespace CarActor
             return this.StateManager.TryAddStateAsync("count", 0);
         }
 
+        public Task<string> GetStatusAsync(CancellationToken cancellationToken)
+        {
+            return Task.FromResult("test");
+        }
+
         /// <summary>
         /// TODO: Replace with your own actor method.
         /// </summary>

@@ -17,6 +17,13 @@ namespace CarActor.Interfaces
     public interface ICarActor : IActor
     {
         /// <summary>
+        /// Returns the Vehicle Status
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<string> GetStatusAsync(CancellationToken cancellationToken);
+
+        /// <summary>
         /// TODO: Replace with your own actor method.
         /// </summary>
         /// <returns></returns>
