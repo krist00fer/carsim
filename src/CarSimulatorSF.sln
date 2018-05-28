@@ -5,7 +5,11 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "CarSimulatorSF", "CarSimulatorSF\CarSimulatorSF.sfproj", "{0BC794AD-1723-4B56-8E12-4C2C9AC1E9E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{C31287AB-9981-40D8-A198-CD8C3286C240}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csproj", "{C31287AB-9981-40D8-A198-CD8C3286C240}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarActor", "CarActor\CarActor.csproj", "{FFA1ED14-0607-453F-9597-F90D93B7275F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarActor.Interfaces", "CarActor.Interfaces\CarActor.Interfaces.csproj", "{C8BFA333-6791-4D17-98CD-5EF1B885A508}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,22 @@ Global
 		{C31287AB-9981-40D8-A198-CD8C3286C240}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C31287AB-9981-40D8-A198-CD8C3286C240}.Release|x64.ActiveCfg = Release|Any CPU
 		{C31287AB-9981-40D8-A198-CD8C3286C240}.Release|x64.Build.0 = Release|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Debug|x64.Build.0 = Debug|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Release|x64.ActiveCfg = Release|Any CPU
+		{FFA1ED14-0607-453F-9597-F90D93B7275F}.Release|x64.Build.0 = Release|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Debug|x64.Build.0 = Debug|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Release|x64.ActiveCfg = Release|Any CPU
+		{C8BFA333-6791-4D17-98CD-5EF1B885A508}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
