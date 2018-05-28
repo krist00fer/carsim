@@ -13,21 +13,21 @@ namespace WebApi.Controllers
     {
         // GET api/vehicles
         [HttpGet]
-        public Task<IEnumerable<Vehicle>> Get()
+        public IEnumerable<Vehicle> Get()
         {
             return SimulatedCarHelper.GetVehicles();
         }
 
         // GET api/vehicles/5
         [HttpGet("{vehicleId}")]
-        public Task<Vehicle> Get(string vehicleId)
+        public Vehicle Get(string vehicleId)
         {
             return SimulatedCarHelper.GetVehicle(vehicleId);
         }
 
         // GET api/vehicle/UAK298/status
         [HttpGet("{vehicleId}/status")]
-        public Task<VehicleStatus> GetStatus(string vehicleId)
+        public VehicleStatus GetStatus(string vehicleId)
         {
             return SimulatedCarHelper.GetVehicleStatus(vehicleId);
         }
