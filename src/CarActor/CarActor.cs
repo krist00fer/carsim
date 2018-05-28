@@ -68,9 +68,9 @@ namespace CarActor
 
         public async Task StartAsync(int from, int to, CancellationToken cancellationToken)
         {
-            await StateManager.AddOrUpdateStateAsync("from-geo-position", from, (k, v) => v);
-            await StateManager.AddOrUpdateStateAsync("current-geo-position", from, (k, v) => v);
-            await StateManager.AddOrUpdateStateAsync("to-geo-position", to, (k, v) => v);
+            await StateManager.AddOrUpdateStateAsync("from-geo-position", from, (k, v) => from);
+            await StateManager.AddOrUpdateStateAsync("current-geo-position", from, (k, v) => from);
+            await StateManager.AddOrUpdateStateAsync("to-geo-position", to, (k, v) => to);
 
             await RegisterReminderAsync(
                 "update-reminder", null,
