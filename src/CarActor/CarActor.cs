@@ -42,12 +42,14 @@ namespace CarActor
 
         public async Task<VehicleStatus> GetStatusAsync(CancellationToken cancellationToken)
         {
-            return new VehicleStatus
+            var status = new VehicleStatus
             {
-                FromGeoPosition = await StateManager.GetStateAsync<int>("from-geo-position"),
-                CurrentGeoPosition = await StateManager.GetStateAsync<int>("current-geo-position"),
-                ToGeoPosition = await StateManager.GetStateAsync<int>("to-geo-position")
+                FromGeoPosition = await StateManager.GetOrAddStateAsync<int>("from-geo-position", 0),
+                CurrentGeoPosition = await StateManager.GetOrAddStateAsync<int>("current-geo-position", 0),
+                ToGeoPosition = await StateManager.GetOrAddStateAsync<int>("to-geo-position", 0)
             };
+
+            return status;
         }
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)

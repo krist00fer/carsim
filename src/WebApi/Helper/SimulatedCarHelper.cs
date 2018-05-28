@@ -14,7 +14,7 @@ namespace WebApi.Helper
 {
     public static class SimulatedCarHelper
     {
-        public static Task<IEnumerable<Vehicle>> GetVehicles()
+        public static IEnumerable<Vehicle> GetVehicles()
         {
             ContinuationToken continuationToken = null;
             var vehicles = new List<Vehicle>();
@@ -32,20 +32,20 @@ namespace WebApi.Helper
                 queriedActorCount += queryResult.Items.Count();
                 continuationToken = queryResult.ContinuationToken;
             } while (continuationToken != null);
-            return Task.FromResult(vehicles.AsEnumerable());
+            return vehicles;
         }
 
-        public static Task<Vehicle> GetVehicle(string vehicleId)
+        public static Vehicle GetVehicle(string vehicleId)
         {
             //var proxy = GetActorProxy(vehicleId);
             //return proxy.Get();
-            return Task.FromResult(new Vehicle { VehicleId = vehicleId });
+            return new Vehicle { VehicleId = vehicleId };
         }
 
-        public static Task<VehicleStatus> GetVehicleStatus(string vehicleId)
+        public static VehicleStatus GetVehicleStatus(string vehicleId)
         {
             var proxy = GetActorProxy(vehicleId);
-            return proxy.GetStatusAsync(CancellationToken.None);
+            return proxy.GetStatusAsync(CancellationToken.None).Result;
         }
 
 
