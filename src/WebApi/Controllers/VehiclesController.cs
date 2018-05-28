@@ -15,7 +15,8 @@ namespace WebApi.Controllers
         [HttpGet]
         public Task<IEnumerable<Vehicle>> Get()
         {
-            return SimulatedCarHelper.GetVehicles();
+            //return SimulatedCarHelper.GetVehicles();
+            return null;
         }
 
         // GET api/vehicles/5
