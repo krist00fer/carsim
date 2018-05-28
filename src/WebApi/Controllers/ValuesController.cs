@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public void Post([FromBody]string value)
         {
+            Debug.WriteLine(value);
         }
 
         // PUT api/values/5

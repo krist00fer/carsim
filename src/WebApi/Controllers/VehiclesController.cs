@@ -26,7 +26,7 @@ namespace WebApi.Controllers
             return SimulatedCarHelper.GetVehicle(vehicleId);
         }
 
-        // GET api/vehicle/UAK298/status
+        // GET api/vehicles/UAK298/status
         [HttpGet("{vehicleId}/status")]
         public VehicleStatus GetStatus(string vehicleId)
         {
