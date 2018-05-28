@@ -57,7 +57,8 @@ namespace CarActor
             var currentGeoPosition = await StateManager.GetOrAddStateAsync("current-geo-position", 0);
             var toGeoPosition = await StateManager.GetOrAddStateAsync("to-geo-position", 0);
 
-            await StateManager.AddOrUpdateStateAsync("current-geo-position", ++currentGeoPosition, (k, v) => v);
+            currentGeoPosition++;
+            await StateManager.AddOrUpdateStateAsync("current-geo-position", currentGeoPosition, (k, v) => currentGeoPosition);
 
             if (currentGeoPosition >= toGeoPosition)
             {
