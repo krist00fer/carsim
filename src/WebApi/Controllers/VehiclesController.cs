@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Helper;
 
 namespace WebApi.Controllers
 {
@@ -12,18 +13,17 @@ namespace WebApi.Controllers
     {
         // GET api/vehicles
         [HttpGet]
-        public IEnumerable<Vehicle> Get()
+        public Task<IEnumerable<Vehicle>> Get()
         {
-            // TODO: return all vehicles
-            return new Vehicle[] { new Vehicle { VehicleId = "UAK298", Owner = "Peter Bryntesson" } };
+            return SimulatedCarHelper.GetVehicles();
         }
 
         // GET api/vehicles/5
         [HttpGet("{vehicleId}")]
-        public Vehicle Get(string vehicleId)
+        public Task<Vehicle> Get(string vehicleId)
         {
             // TODO: Return specific vehicle
-            return new Vehicle { VehicleId = "UAK298", Owner = "Peter Bryntesson" };
+            return SimulatedCarHelper.GetVehicle(vehicleId);
         }
 
         // GET api/vehicle/UAK298/status

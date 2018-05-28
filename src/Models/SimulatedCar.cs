@@ -6,6 +6,7 @@ namespace Models
 {
     public class SimulatedCar
     {
+        public bool Running { get; set; }
         public string VehicleId { get; set; }
     }
 }
