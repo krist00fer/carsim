@@ -31,7 +31,7 @@ namespace WebApi.Controllers
         public VehicleStatus GetStatus(string vehicleId)
         {
             // TODO: return current status for vehicle
-            return new VehicleStatus { VehicleId = "UAK298", Latitude = 14, Longitude = 15, Direction = 180, Speed = 90, Date = DateTime.Now };
+            return new VehicleStatus { CurrentGeoPosition = 0, FromGeoPosition = 0, ToGeoPosition = 0 };
         }
         // POST api/vehicles
         [HttpPost]

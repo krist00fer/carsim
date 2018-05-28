@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Remoting.FabricTransport;
 using Microsoft.ServiceFabric.Services.Remoting;
+using Models;
 
 [assembly: FabricTransportActorRemotingProvider(RemotingListener = RemotingListener.V2Listener, RemotingClient = RemotingClient.V2Client)]
 namespace CarActor.Interfaces
@@ -21,19 +19,22 @@ namespace CarActor.Interfaces
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<string> GetStatusAsync(CancellationToken cancellationToken);
+        Task<VehicleStatus> GetStatusAsync(CancellationToken cancellationToken);
 
         /// <summary>
-        /// TODO: Replace with your own actor method.
+        /// Starts the Vehicle, simulating driving from one point to another
         /// </summary>
+        /// <param name="from">Drive from geo-position</param>
+        /// <param name="to">Drive to geo-position</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<int> GetCountAsync(CancellationToken cancellationToken);
+        Task StartAsync(int from, int to, CancellationToken cancellationToken);
 
         /// <summary>
-        /// TODO: Replace with your own actor method.
+        /// Stops the Vehicle simulation
         /// </summary>
-        /// <param name="count"></param>
+        /// <param name="cancellation"></param>
         /// <returns></returns>
-        Task SetCountAsync(int count, CancellationToken cancellationToken);
+        Task StopAsync(CancellationToken cancellation);
     }
 }
