@@ -2,6 +2,9 @@
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="CarSimulatorSFType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="WebApi_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="CarActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="CarActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="CarActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
@@ -23,6 +26,11 @@
       <StatelessService ServiceTypeName="WebApiType" InstanceCount="[WebApi_InstanceCount]">
         <SingletonPartition />
       </StatelessService>
+    </Service>
+    <Service Name="CarActorService" GeneratedIdRef="dd75b62f-8565-4bd1-8b2d-4f4de1c879f7|Persisted">
+      <StatefulService ServiceTypeName="CarActorServiceType" TargetReplicaSetSize="[CarActorService_TargetReplicaSetSize]" MinReplicaSetSize="[CarActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[CarActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
     </Service>
   </DefaultServices>
 </ApplicationManifest>
