@@ -32,6 +32,14 @@ namespace WebApi.Controllers
         {
             return SimulatedCarHelper.GetVehicleStatus(vehicleId);
         }
+
+        // GET api/vehicles/UAK298/rulestatus
+        [HttpGet("{vehicleId}/rulestatus")]
+        public bool? GetRuleStatus(string vehicleId)
+        {
+            return SimulatedCarHelper.GetRuleStatus(vehicleId);
+        }
+
         // POST api/vehicles
         [HttpPost]
         public void Post([FromBody]Vehicle value)

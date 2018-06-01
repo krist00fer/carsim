@@ -14,29 +14,29 @@ namespace WebApi.Controllers
     [Route("api/[controller]")]
     public class SimulationController
     {
-        // POST api/vehicles
+        // POST api/simulation
         [HttpPost]
-        public async void Post([FromBody] SimulatedCar value)
+        public async void Post([FromBody] SimulatedCar car)
         {
-            var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{value.VehicleId}"));
-            if (value.Running)
-                await proxy.StartAsync(value.FromPosition, value.ToPosition, CancellationToken.None);
+            var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{car.VehicleId}"));
+            if (car.Running)
+                await proxy.StartAsync(car.VehicleId, car.StartLatitude, car.StartLongitude, CancellationToken.None);
             else
                 await proxy.StopAsync(CancellationToken.None);
         }
 
-        // PUT api/vehicle/5
+        // PUT api/simulation/5
         [HttpPut("{vehicleId}")]
-        public async void Put(string vehicleId, [FromBody]SimulatedCar value)
+        public async void Put(string vehicleId, [FromBody]SimulatedCar car)
         {
-            var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{value.VehicleId}"));
-            if (value.Running)
-                await proxy.StartAsync(value.FromPosition, value.ToPosition, CancellationToken.None);
+            var proxy = ActorProxy.Create<ICarActor>(new ActorId($"SimulatedCar:{car.VehicleId}"));
+            if (car.Running)
+                await proxy.StartAsync(car.VehicleId, car.StartLatitude, car.StartLongitude, CancellationToken.None);
             else
                 await proxy.StopAsync(CancellationToken.None);
         }
 
-        // DELETE api/values/5
+        // DELETE api/simulation/5
         [HttpDelete("{vehicleId}")]
         public async void Delete(string vehicleId)
         {

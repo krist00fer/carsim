@@ -17,18 +17,23 @@ namespace CarActor.Interfaces
         /// <summary>
         /// Returns the Vehicle Status
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<VehicleStatus> GetStatusAsync(CancellationToken cancellationToken);
+        Task<VehicleStatus> GetStatusAsync();
+
+        /// <summary>
+        /// Get the status of the rule
+        /// </summary>
+        /// <returns>If rule is active, it returns whether the rule has hit or not. Otherwise it return null</returns>
+        Task<bool?> GetRuleStatusAsync();
 
         /// <summary>
         /// Starts the Vehicle, simulating driving from one point to another
         /// </summary>
-        /// <param name="from">Drive from geo-position</param>
-        /// <param name="to">Drive to geo-position</param>
+        /// <param name="latitude">Starting position</param>
+        /// <param name="longitude">Starting position</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task StartAsync(int from, int to, CancellationToken cancellationToken);
+        Task StartAsync(string vechicleId, double latitude, double longitude, CancellationToken cancellationToken);
 
         /// <summary>
         /// Stops the Vehicle simulation
@@ -36,5 +41,13 @@ namespace CarActor.Interfaces
         /// <param name="cancellation"></param>
         /// <returns></returns>
         Task StopAsync(CancellationToken cancellation);
+
+        /// <summary>
+        /// Sets an optional rule that monitors the driving
+        /// </summary>
+        /// <param name="maxSpeed">Maximum speed that the driver can drive</param>
+        /// <param name="geoBoundaryJson">Geographic boundaris that the driver should not exceed. Expressed in GeoJSON</param>
+        /// <returns></returns>
+        Task SetRuleAsync(double maxSpeed, string geoBoundaryJson);
     }
 }

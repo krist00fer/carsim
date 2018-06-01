@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace WebApi.Helper
 {
@@ -45,9 +43,14 @@ namespace WebApi.Helper
         public static VehicleStatus GetVehicleStatus(string vehicleId)
         {
             var proxy = GetActorProxy(vehicleId);
-            return proxy.GetStatusAsync(CancellationToken.None).Result;
+            return proxy.GetStatusAsync().Result;
         }
 
+        public static bool? GetRuleStatus(string vehicleId)
+        {
+            var proxy = GetActorProxy(vehicleId);
+            return proxy.GetRuleStatusAsync().Result;
+        }
 
         public static ActorId GetActorId(string vehicleId)
         {

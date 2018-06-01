@@ -1,0 +1,20 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Simulation.UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Custom="using:Windows.UI.Xaml.Controls.Maps"
+    x:Class="Simulation.UWP.MainPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+
+        <Custom:MapControl x:Name="mapControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <StackPanel Margin="10, 0, 10, 10" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
+            <Button x:Name="startButton" Margin="4" Content="Start" Tapped="startButton_Tapped" />
+            <Button x:Name="stopButton" Margin="4" Content="Stop" Tapped="stopButton_Tapped" IsEnabled="False" />
+        </StackPanel>
+    </Grid>
+</Page>

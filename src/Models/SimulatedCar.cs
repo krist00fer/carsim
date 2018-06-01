@@ -6,8 +6,8 @@ namespace Models
 {
     public class SimulatedCar
     {
-        public int FromPosition { get; set; }
-        public int ToPosition { get; set; }
+        public double StartLatitude { get; set; }
+        public double StartLongitude { get; set; }
         public bool Running { get; set; }
         public string VehicleId { get; set; }
     }

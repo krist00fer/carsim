@@ -8,17 +8,17 @@ namespace Models
     [DataContract]
     public class VehicleStatus
     {
-        //public string VehicleId { get; set; }
-        //public double Latitude { get; set; }
-        //public double Longitude { get; set; }
-        //public double Direction { get; set; }
-        //public double Speed { get; set; }
-        //public DateTime Date { get; set; }
         [DataMember]
-        public int FromGeoPosition { get; set; }
+        public string VehicleId { get; set; }
         [DataMember]
-        public int CurrentGeoPosition { get; set; }
+        public double Latitude { get; set; }
         [DataMember]
-        public int ToGeoPosition { get; set; }
+        public double Longitude { get; set; }
+        [DataMember]
+        public double Direction { get; set; }
+        [DataMember]
+        public double Speed { get; set; }
+        [DataMember]
+        public DateTime Date { get; set; }
     }
 }

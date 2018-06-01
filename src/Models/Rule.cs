@@ -7,7 +7,8 @@ namespace WebApi.Models
 {
     public class Rule
     {
-        public int FenceRadius { get; set; }
-        public int SpeedLimit { get; set; }
+        public string VehicleId { get; set; }
+        public string GeoBoundaryJson { get; set; }
+        public int MaxSpeed { get; set; }
     }
 }
