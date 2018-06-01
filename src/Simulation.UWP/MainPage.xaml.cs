@@ -17,6 +17,11 @@ using Windows.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using System.Text;
 using WebApi.Models;
+using Windows.UI.Xaml.Controls.Maps;
+using GeoJSON.Net.Geometry;
+using GeoJSON.Net.Feature;
+using Windows.UI;
+using Windows.Devices.Geolocation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -27,6 +32,9 @@ namespace Simulation.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private MapIcon _currentPosition;
+        private string _geoBoundaryJson = "{ \"type\": \"FeatureCollection\", \"features\": [{ \"type\": \"Feature\",\"properties\": {}, \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[11.877833, 57.681415], [11.904169, 57.689031], [11.896745, 57.693944], [11.89998, 57.700291], [11.878627, 57.695647], [11.886423, 57.689573], [11.877833, 57.681415]]]}}]}";
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -34,9 +42,26 @@ namespace Simulation.UWP
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            var position = new Windows.Devices.Geolocation.Geopoint(new Windows.Devices.Geolocation.BasicGeoposition() { Latitude = 57.693826, Longitude = 11.891392 });
             base.OnNavigatedTo(e);
-            mapControl.Center = new Windows.Devices.Geolocation.Geopoint(new Windows.Devices.Geolocation.BasicGeoposition() { Latitude = 57.693826, Longitude = 11.891392 });
+            mapControl.Center = position;
             mapControl.ZoomLevel = 14;
+            _currentPosition = new MapIcon { Location = position, Title = "Current Position", ZIndex = 0 };
+            mapControl.MapElements.Add(_currentPosition);
+
+            var points = ParseGeoBoundaryJson(_geoBoundaryJson);
+            var polygon = new MapPolygon();
+            polygon.FillColor = Colors.Transparent;
+            polygon.StrokeColor = Colors.Green;
+            polygon.StrokeThickness = 5;
+
+            var pathPositions = new List<BasicGeoposition>();
+            foreach (var point in points)
+            {
+                pathPositions.Add(new BasicGeoposition() { Latitude = point.Latitude, Longitude = point.Longitude });
+            }
+            polygon.Paths.Add(new Geopath(pathPositions));
+            mapControl.MapElements.Add(polygon);
 
             var timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(2);
@@ -48,11 +73,21 @@ namespace Simulation.UWP
         {
             try
             {
-                var responseVehicleStatus = new HttpClient().PostAsync(new Uri("http://localhost:8961/api/vehicles/UAK298/status"), null).Result;
+                var responseVehicleStatus = new HttpClient().GetAsync(new Uri("http://localhost:8961/api/vehicles/UAK298/status")).Result;
                 if (responseVehicleStatus.IsSuccessStatusCode)
                 {
                     var vehicleStatus = JsonConvert.DeserializeObject<VehicleStatus>(await responseVehicleStatus.Content.ReadAsStringAsync());
-                    mapControl.Center = new Windows.Devices.Geolocation.Geopoint(new Windows.Devices.Geolocation.BasicGeoposition() { Latitude = vehicleStatus.Latitude, Longitude = vehicleStatus.Longitude });
+                    var newPosition = new Windows.Devices.Geolocation.Geopoint(new Windows.Devices.Geolocation.BasicGeoposition() { Latitude = vehicleStatus.Latitude, Longitude = vehicleStatus.Longitude });
+                    //mapControl.Center = position;
+                    _currentPosition.Location = newPosition;
+                }
+
+                var responseRuleStatus = new HttpClient().GetAsync(new Uri("http://localhost:8961/api/vehicles/UAK298/rulestatus")).Result;
+                if (responseRuleStatus.IsSuccessStatusCode)
+                {
+                    var ruleStatusJson = JsonConvert.DeserializeObject<bool?>(await responseRuleStatus.Content.ReadAsStringAsync());
+                    ruleStatus.Text = (!ruleStatusJson.HasValue ? "UNKNOWN" : ruleStatusJson.Value ? "INSIDE" : "OUTSIDE");
+                    ruleStatus.Foreground = (!ruleStatusJson.HasValue ? new SolidColorBrush(Colors.Yellow) : ruleStatusJson.Value ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red));
                 }
             }
             catch (Exception)
@@ -70,7 +105,7 @@ namespace Simulation.UWP
                                         Encoding.UTF8, "application/json")).Result;
                 var responseRule = new HttpClient().PostAsync(new Uri("http://localhost:8961/api/rules"),
                                     new StringContent(JsonConvert.SerializeObject(
-                                        new Rule() { VehicleId = "UAK298", MaxSpeed = 80, GeoBoundaryJson = "{ \"type\": \"FeatureCollection\", \"features\": [{ \"type\": \"Feature\",\"properties\": {}, \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[11.877833, 57.681415], [11.904169, 57.689031], [11.896745, 57.693944], [11.89998, 57.700291], [11.878627, 57.695647], [11.886423, 57.689573], [11.877833, 57.681415]]]}}]}" }),
+                                        new Rule() { VehicleId = "UAK298", MaxSpeed = 80, GeoBoundaryJson = _geoBoundaryJson }),
                                         Encoding.UTF8, "application/json")).Result;
             }
             catch (Exception)
@@ -98,6 +133,25 @@ namespace Simulation.UWP
 
             startButton.IsEnabled = true;
             stopButton.IsEnabled = false;
+        }
+
+        private GeographicPosition[] ParseGeoBoundaryJson(string geoBoundaryJson)
+        {
+            var featureCollection = JsonConvert.DeserializeObject<FeatureCollection>(geoBoundaryJson);
+            var points = new List<GeographicPosition>();
+            foreach (var feature in featureCollection.Features)
+            {
+                var polygons = feature.Geometry as Polygon;
+                foreach (var polygon in polygons.Coordinates)
+                {
+                    foreach (var point in polygon.Coordinates)
+                    {
+                        var geoPosition = point as GeoJSON.Net.Geometry.GeographicPosition;
+                        points.Add(geoPosition);
+                    }
+                }
+            }
+            return points.ToArray();
         }
     }
 }

@@ -15,6 +15,7 @@
         <StackPanel Margin="10, 0, 10, 10" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
             <Button x:Name="startButton" Margin="4" Content="Start" Tapped="startButton_Tapped" />
             <Button x:Name="stopButton" Margin="4" Content="Stop" Tapped="stopButton_Tapped" IsEnabled="False" />
+            <TextBlock x:Name="ruleStatus" Text="UNKNOWN" Foreground="Yellow" Margin="4" VerticalAlignment="Center" />
         </StackPanel>
     </Grid>
 </Page>
