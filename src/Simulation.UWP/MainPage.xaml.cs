@@ -32,6 +32,8 @@ namespace Simulation.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private string _endpoint = "http://pb-lynkdemosf.westeurope.cloudapp.azure.com:8961";
+        //private string _endpoint = "http://localhost:8961";
         private MapIcon _currentPosition;
         private string _geoBoundaryJson = "{ \"type\": \"FeatureCollection\", \"features\": [{ \"type\": \"Feature\",\"properties\": {}, \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[11.877833, 57.681415], [11.904169, 57.689031], [11.896745, 57.693944], [11.89998, 57.700291], [11.878627, 57.695647], [11.886423, 57.689573], [11.877833, 57.681415]]]}}]}";
 
@@ -73,7 +75,7 @@ namespace Simulation.UWP
         {
             try
             {
-                var responseVehicleStatus = new HttpClient().GetAsync(new Uri("http://localhost:8961/api/vehicles/UAK298/status")).Result;
+                var responseVehicleStatus = new HttpClient().GetAsync(new Uri(_endpoint + "/api/vehicles/UAK298/status")).Result;
                 if (responseVehicleStatus.IsSuccessStatusCode)
                 {
                     var vehicleStatus = JsonConvert.DeserializeObject<VehicleStatus>(await responseVehicleStatus.Content.ReadAsStringAsync());
@@ -82,7 +84,7 @@ namespace Simulation.UWP
                     _currentPosition.Location = newPosition;
                 }
 
-                var responseRuleStatus = new HttpClient().GetAsync(new Uri("http://localhost:8961/api/vehicles/UAK298/rulestatus")).Result;
+                var responseRuleStatus = new HttpClient().GetAsync(new Uri(_endpoint + "/api/vehicles/UAK298/rulestatus")).Result;
                 if (responseRuleStatus.IsSuccessStatusCode)
                 {
                     var ruleStatusJson = JsonConvert.DeserializeObject<bool?>(await responseRuleStatus.Content.ReadAsStringAsync());
@@ -99,11 +101,11 @@ namespace Simulation.UWP
         {
             try
             {
-                var responseSimulation = new HttpClient().PostAsync(new Uri("http://localhost:8961/api/simulation"),
+                var responseSimulation = new HttpClient().PostAsync(new Uri(_endpoint + "/api/simulation"),
                                     new StringContent(JsonConvert.SerializeObject(
                                         new SimulatedCar() { VehicleId = "UAK298", Running = true, StartLatitude = mapControl.Center.Position.Latitude, StartLongitude = mapControl.Center.Position.Longitude }),
                                         Encoding.UTF8, "application/json")).Result;
-                var responseRule = new HttpClient().PostAsync(new Uri("http://localhost:8961/api/rules"),
+                var responseRule = new HttpClient().PostAsync(new Uri(_endpoint + "/api/rules"),
                                     new StringContent(JsonConvert.SerializeObject(
                                         new Rule() { VehicleId = "UAK298", MaxSpeed = 80, GeoBoundaryJson = _geoBoundaryJson }),
                                         Encoding.UTF8, "application/json")).Result;
@@ -121,7 +123,7 @@ namespace Simulation.UWP
         {
             try
             {
-                var responseSimulation = new HttpClient().PostAsync(new Uri("http://localhost:8961/api/simulation"),
+                var responseSimulation = new HttpClient().PostAsync(new Uri(_endpoint + "/api/simulation"),
                                     new StringContent(JsonConvert.SerializeObject(
                                         new SimulatedCar() { VehicleId = "UAK298", Running = false, StartLatitude = mapControl.Center.Position.Latitude, StartLongitude = mapControl.Center.Position.Longitude }),
                                         Encoding.UTF8, "application/json")).Result;

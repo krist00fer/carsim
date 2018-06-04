@@ -20,7 +20,7 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="" />
+  <ClusterConnectionParameters ConnectionEndpoint="pb-lynkdemosf.westeurope.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="AEE0273E4472E62E322D2294E59F9B01110301D6" FindType="FindByThumbprint" FindValue="AEE0273E4472E62E322D2294E59F9B01110301D6" StoreLocation="CurrentUser" StoreName="My" />
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

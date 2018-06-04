@@ -1,12 +1,14 @@
 ﻿using CarActor.Interfaces;
 using GeoJSON.Net.Feature;
 using GeoJSON.Net.Geometry;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +28,7 @@ namespace CarActor
         private VehicleStatus _vehicleStatus;
         private double? _maxSpeed;
         private GeographicPosition[] _points;
+        bool? _inside;
 
         /// <summary>
         /// Initializes a new instance of CarActor
@@ -85,6 +88,14 @@ namespace CarActor
             _vehicleStatus.Latitude += deltaLatitude;
             _vehicleStatus.Longitude += deltaLongitude;
             await StateManager.SetStateAsync("vehicleStatus", _vehicleStatus);
+
+            var point = new GeographicPosition(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
+            bool newInside = IsPointInPolygon(point, _points);
+            if (_inside.HasValue && _inside.Value != newInside)
+            {
+                await SendNotification(_vehicleStatus.VehicleId, newInside ? "Now we are inside the safe block" : "DANGER: We are outside the safe block!");
+            }
+            _inside = newInside;
         }
 
         public async Task StartAsync(string vehicleId, double latitude, double longitude, CancellationToken cancellationToken)
@@ -174,6 +185,24 @@ namespace CarActor
             }
 
             return inside;
+        }
+
+        private async Task SendNotification(string vehicleId, string message)
+        {
+            Microsoft.Azure.NotificationHubs.NotificationOutcome outcome = null;
+            HttpStatusCode ret = HttpStatusCode.InternalServerError;
+
+            // Android
+            var notif = "{ \"data\" : {\"message\":\"" + "From " + vehicleId + ": " + message + "\"}}";
+            outcome = await Notifications.Instance.Hub.SendGcmNativeNotificationAsync(notif);
+            if (outcome != null)
+            {
+                if (!((outcome.State == Microsoft.Azure.NotificationHubs.NotificationOutcomeState.Abandoned) ||
+                    (outcome.State == Microsoft.Azure.NotificationHubs.NotificationOutcomeState.Unknown)))
+                {
+                    ret = HttpStatusCode.OK;
+                }
+            }
         }
     }
 }
