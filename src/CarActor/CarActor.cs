@@ -34,6 +34,7 @@ namespace CarActor
         private double? _maxSpeed;
         private GeographicPosition[] _points;
         bool? _inside;
+        CancellationTokenSource _cancellationTokenSource;
 
         /// <summary>
         /// Initializes a new instance of CarActor
@@ -118,12 +119,15 @@ namespace CarActor
 
             if (_route != null)
             {
+                _cancellationTokenSource = new CancellationTokenSource();
                 long currentTick = 0;
                 Task.Run(async () =>
                 {
                     int routePointIndex = 0;
                     while (routePointIndex < _route.RoutePoints.Count)
                     {
+                        if (_cancellationTokenSource.Token.IsCancellationRequested)
+                            break;
                         while (!_route.RoutePoints[routePointIndex].Latitude.HasValue ||
                                 !_route.RoutePoints[routePointIndex].Longitude.HasValue)
                             routePointIndex++;
@@ -179,6 +183,9 @@ namespace CarActor
                 var reminder = GetReminder("update-reminder");
                 await UnregisterReminderAsync(reminder);
             }
+            else if (_cancellationTokenSource != null)
+                _cancellationTokenSource.Cancel();
+
         }
 
         public async Task SetRuleAsync(double maxSpeed, string geoBoundaryJson)
