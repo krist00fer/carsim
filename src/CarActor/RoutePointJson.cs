@@ -12,7 +12,7 @@ namespace CarActor
         [JsonProperty("time_stamp")]
         public long Timestamp { get; set; }
         [JsonProperty("alarm")]
-        public int Alarm { get; set; }
+        public int? Alarm { get; set; }
         [JsonProperty("altitude")]
         public double? Altitude { get; set; }
         [JsonProperty("latitude")]
@@ -22,9 +22,9 @@ namespace CarActor
         [JsonProperty("direction")]
         public double? Direction { get; set; }
         [JsonProperty("battery")]
-        public int BatteryLevel { get; set; }
+        public int? BatteryLevel { get; set; }
         [JsonProperty("ignition")]
-        public bool Ignition { get; set; }
+        public bool? Ignition { get; set; }
         [JsonProperty("speed")]
         public double? Speed { get; set; }
 #if false

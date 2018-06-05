@@ -1,4 +1,5 @@
 ﻿using CarActor.Interfaces;
+using GeoCoordinatePortable;
 using GeoJSON.Net.Feature;
 using GeoJSON.Net.Geometry;
 using Microsoft.Azure.NotificationHubs;
@@ -8,7 +9,9 @@ using Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +28,8 @@ namespace CarActor
     [StatePersistence(StatePersistence.Persisted)]
     internal class CarActor : Actor, ICarActor, IRemindable
     {
+        private static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private RouteJson _route;
         private VehicleStatus _vehicleStatus;
         private double? _maxSpeed;
         private GeographicPosition[] _points;
@@ -35,9 +40,14 @@ namespace CarActor
         /// </summary>
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
-        public CarActor(ActorService actorService, ActorId actorId) 
+        public CarActor(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
         {
+            if (_route == null)
+            {
+                _route = LoadRoute(actorService.Context.CodePackageActivationContext.GetCodePackageObject("Code").Path);
+                _route.RoutePoints.Reverse();
+            }
         }
 
         /// <summary>
@@ -87,15 +97,8 @@ namespace CarActor
             var deltaLatitude = dy / 110540.0;
             _vehicleStatus.Latitude += deltaLatitude;
             _vehicleStatus.Longitude += deltaLongitude;
-            await StateManager.SetStateAsync("vehicleStatus", _vehicleStatus);
 
-            var point = new GeographicPosition(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
-            bool newInside = IsPointInPolygon(point, _points);
-            if (_inside.HasValue && _inside.Value != newInside)
-            {
-                await SendNotification(_vehicleStatus.VehicleId, newInside ? "Now we are inside the safe block" : "DANGER: We are outside the safe block!");
-            }
-            _inside = newInside;
+            await SaveNewPoint();
         }
 
         public async Task StartAsync(string vehicleId, double latitude, double longitude, CancellationToken cancellationToken)
@@ -113,17 +116,57 @@ namespace CarActor
             // save starting vechicle status
             await StateManager.SetStateAsync("vehicleStatus", _vehicleStatus);
 
-            // register remainder
-            await RegisterReminderAsync(
-                "update-reminder", null,
-                TimeSpan.FromSeconds(5),    //The amount of time to delay before firing the reminder
-                TimeSpan.FromSeconds(5));    //The time interval between firing of reminders
+            if (_route != null)
+            {
+                long currentTick = 0;
+                Task.Run(async () =>
+                {
+                    int routePointIndex = 0;
+                    while (routePointIndex < _route.RoutePoints.Count)
+                    {
+                        while (!_route.RoutePoints[routePointIndex].Latitude.HasValue ||
+                                !_route.RoutePoints[routePointIndex].Longitude.HasValue)
+                            routePointIndex++;
+
+                        var routePoint = _route.RoutePoints[routePointIndex];
+                        if (routePoint.Latitude.Value != _vehicleStatus.Latitude || routePoint.Longitude.Value != _vehicleStatus.Longitude)
+                        {
+                            var milliseconds = (currentTick != 0 && routePoint.Timestamp > currentTick ? (FromUnixTime(routePoint.Timestamp) - FromUnixTime(currentTick)).TotalMilliseconds : 0);
+                            await Task.Delay((int)milliseconds);
+                            currentTick = _route.RoutePoints[routePointIndex].Timestamp;
+                            // calculate new speed and direction
+                            var sCoord = new GeoCoordinate(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
+                            var eCoord = new GeoCoordinate(routePoint.Latitude.Value, routePoint.Longitude.Value);
+                            double distanceInMeters = sCoord.GetDistanceTo(eCoord);
+                            var newSpeed = (milliseconds > 0 ? (distanceInMeters / (milliseconds * 1000.0)) * 3.6 : 0.0);
+                            // assign new speed
+                            _vehicleStatus.Speed = newSpeed;
+                            _vehicleStatus.Latitude = routePoint.Latitude.Value;
+                            _vehicleStatus.Longitude = routePoint.Longitude.Value;
+
+                            await SaveNewPoint();
+                        }
+                        routePointIndex++;
+                    }
+                });
+            }
+            else
+            {
+                // register remainder
+                await RegisterReminderAsync(
+                    "update-reminder", null,
+                    TimeSpan.FromSeconds(5),    //The amount of time to delay before firing the reminder
+                    TimeSpan.FromSeconds(5));    //The time interval between firing of reminders
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellation)
         {
-            var reminder = GetReminder("update-reminder");
-            await UnregisterReminderAsync(reminder);
+            if (_route == null)
+            {
+                var reminder = GetReminder("update-reminder");
+                await UnregisterReminderAsync(reminder);
+            }
         }
 
         public async Task SetRuleAsync(double maxSpeed, string geoBoundaryJson)
@@ -141,12 +184,15 @@ namespace CarActor
             foreach (var feature in featureCollection.Features)
             {
                 var polygons = feature.Geometry as Polygon;
-                foreach (var polygon in polygons.Coordinates)
+                if (polygons != null)
                 {
-                    foreach (var point in polygon.Coordinates)
+                    foreach (var polygon in polygons.Coordinates)
                     {
-                        var geoPosition = point as GeoJSON.Net.Geometry.GeographicPosition;
-                        points.Add(geoPosition);
+                        foreach (var point in polygon.Coordinates)
+                        {
+                            var geoPosition = point as GeoJSON.Net.Geometry.GeographicPosition;
+                            points.Add(geoPosition);
+                        }
                     }
                 }
             }
@@ -204,5 +250,29 @@ namespace CarActor
                 }
             }
         }
+
+        private RouteJson LoadRoute(string path)
+        {
+            return JsonConvert.DeserializeObject<RouteJson>(File.ReadAllText(Path.Combine(path, "vehicle_tess_iop_poc_se.json")));
+        }
+
+        private async Task SaveNewPoint()
+        {
+            await StateManager.SetStateAsync("vehicleStatus", _vehicleStatus);
+
+            var point = new GeographicPosition(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
+            bool newInside = IsPointInPolygon(point, _points);
+            if (_inside.HasValue && _inside.Value != newInside)
+            {
+                await SendNotification(_vehicleStatus.VehicleId, newInside ? "Now we are inside the safe block" : "DANGER: We are outside the safe block!");
+            }
+            _inside = newInside;
+        }
+
+        public static DateTime FromUnixTime(long unixTime)
+        {
+            return epoch.AddSeconds(unixTime);
+        }
+
     }
 }

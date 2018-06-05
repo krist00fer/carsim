@@ -36,6 +36,7 @@ namespace Simulation.UWP
         //private string _endpoint = "http://localhost:8961";
         private MapIcon _currentPosition;
         private string _geoBoundaryJson = "{ \"type\": \"FeatureCollection\", \"features\": [{ \"type\": \"Feature\",\"properties\": {}, \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[11.877833, 57.681415], [11.904169, 57.689031], [11.896745, 57.693944], [11.89998, 57.700291], [11.878627, 57.695647], [11.886423, 57.689573], [11.877833, 57.681415]]]}}]}";
+        //private string _geoBoundaryJson = "{ \"type\": \"Feature\", \"properties\": {}, \"geometry\": {\"type\": \"Circle\", \"radius\": 30000 \"coordinates\": [11.877833, 57.681415]}";
 
         public MainPage()
         {
@@ -101,13 +102,13 @@ namespace Simulation.UWP
         {
             try
             {
-                var responseSimulation = new HttpClient().PostAsync(new Uri(_endpoint + "/api/simulation"),
-                                    new StringContent(JsonConvert.SerializeObject(
-                                        new SimulatedCar() { VehicleId = "UAK298", Running = true, StartLatitude = mapControl.Center.Position.Latitude, StartLongitude = mapControl.Center.Position.Longitude }),
-                                        Encoding.UTF8, "application/json")).Result;
                 var responseRule = new HttpClient().PostAsync(new Uri(_endpoint + "/api/rules"),
                                     new StringContent(JsonConvert.SerializeObject(
                                         new Rule() { VehicleId = "UAK298", MaxSpeed = 80, GeoBoundaryJson = _geoBoundaryJson }),
+                                        Encoding.UTF8, "application/json")).Result;
+                var responseSimulation = new HttpClient().PostAsync(new Uri(_endpoint + "/api/simulation"),
+                                    new StringContent(JsonConvert.SerializeObject(
+                                        new SimulatedCar() { VehicleId = "UAK298", Running = true, StartLatitude = mapControl.Center.Position.Latitude, StartLongitude = mapControl.Center.Position.Longitude }),
                                         Encoding.UTF8, "application/json")).Result;
             }
             catch (Exception)

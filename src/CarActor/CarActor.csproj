@@ -16,10 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="vehicle_tess_iop_poc_se.json" />
+    <Content Include="vehicle_tess_iop_poc_se.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
     <PackageReference Include="GeoJSON.NetCore" Version="1.0.0-rc20161208" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.0.0-preview2" />
     <PackageReference Include="Microsoft.ServiceFabric" Version="6.2.274" />
