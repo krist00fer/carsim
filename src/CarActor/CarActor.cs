@@ -134,14 +134,25 @@ namespace CarActor
                             var milliseconds = (currentTick != 0 && routePoint.Timestamp > currentTick ? (FromUnixTime(routePoint.Timestamp) - FromUnixTime(currentTick)).TotalMilliseconds : 0);
                             await Task.Delay((int)milliseconds);
                             currentTick = _route.RoutePoints[routePointIndex].Timestamp;
-                            // calculate new speed and direction
-                            var sCoord = new GeoCoordinate(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
-                            var eCoord = new GeoCoordinate(routePoint.Latitude.Value, routePoint.Longitude.Value);
-                            double distanceInMeters = sCoord.GetDistanceTo(eCoord);
-                            var seconds = milliseconds / 1000.0;
-                            var newSpeed = (seconds > 0.0 ? (distanceInMeters / seconds) * 3.6 : 0.0);
-                            // assign new speed
-                            _vehicleStatus.Speed = (routePoint.Speed.HasValue ? routePoint.Speed.Value : newSpeed);
+                            if (!routePoint.Speed.HasValue)
+                            {
+                                try
+                                {
+                                    // calculate new speed and direction
+                                    var sCoord = new GeoCoordinate(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
+                                    var eCoord = new GeoCoordinate(routePoint.Latitude.Value, routePoint.Longitude.Value);
+                                    double distanceInMeters = sCoord.GetDistanceTo(eCoord);
+                                    var seconds = milliseconds / 1000.0;
+                                    var newSpeed = (seconds > 0.0 ? (distanceInMeters / seconds) * 3.6 : 0.0);
+                                    // assign new speed
+                                    _vehicleStatus.Speed = newSpeed;
+                                }
+                                catch (Exception)
+                                {
+                                }
+                            }
+                            else
+                                _vehicleStatus.Speed = routePoint.Speed.Value;
                             _vehicleStatus.Latitude = routePoint.Latitude.Value;
                             _vehicleStatus.Longitude = routePoint.Longitude.Value;
 
