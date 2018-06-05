@@ -32,8 +32,8 @@ namespace Simulation.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private string _endpoint = "http://pb-lynkdemosf.westeurope.cloudapp.azure.com:8961";
-        //private string _endpoint = "http://localhost:8961";
+        //private string _endpoint = "http://pb-lynkdemosf.westeurope.cloudapp.azure.com:8961";
+        private string _endpoint = "http://localhost:8961";
         private MapIcon _currentPosition;
         private string _geoBoundaryJson = "{ \"type\": \"FeatureCollection\", \"features\": [{ \"type\": \"Feature\",\"properties\": {}, \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[11.877833, 57.681415], [11.904169, 57.689031], [11.896745, 57.693944], [11.89998, 57.700291], [11.878627, 57.695647], [11.886423, 57.689573], [11.877833, 57.681415]]]}}]}";
         //private string _geoBoundaryJson = "{ \"type\": \"Feature\", \"properties\": {}, \"geometry\": {\"type\": \"Circle\", \"radius\": 30000 \"coordinates\": [11.877833, 57.681415]}";
