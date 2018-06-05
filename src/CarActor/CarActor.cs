@@ -138,7 +138,7 @@ namespace CarActor
                             var sCoord = new GeoCoordinate(_vehicleStatus.Latitude, _vehicleStatus.Longitude);
                             var eCoord = new GeoCoordinate(routePoint.Latitude.Value, routePoint.Longitude.Value);
                             double distanceInMeters = sCoord.GetDistanceTo(eCoord);
-                            var newSpeed = (milliseconds > 0 ? (distanceInMeters / (milliseconds * 1000.0)) * 3.6 : 0.0);
+                            var newSpeed = (milliseconds > 0 ? (distanceInMeters / (milliseconds / 1000.0)) * 3.6 : 0.0);
                             // assign new speed
                             _vehicleStatus.Speed = newSpeed;
                             _vehicleStatus.Latitude = routePoint.Latitude.Value;
